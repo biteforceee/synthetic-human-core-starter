@@ -13,7 +13,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Slf4j
 @Service
-public class CommandQueueService {
+public class CommandQueueService implements CommandService{
 
     private final ThreadPoolExecutor criticalExecutor;
     private final ThreadPoolExecutor commonExecutor;
@@ -41,8 +41,10 @@ public class CommandQueueService {
         );
 
         this.statisticsService = statisticsService;
+        this.statisticsService.registerQueueSizeSupplier(this::getCurrentQueueSize);
     }
 
+    @Override
     public void submit(Command command) throws InterruptedException {
         try {
             if (command.getPriority() == CommandPriority.CRITICAL) {
@@ -61,6 +63,7 @@ public class CommandQueueService {
         statisticsService.incrementCompletedCommandCount(command.getAuthor());
     }
 
+    @Override
     public int getCurrentQueueSize() {
         return commonExecutor.getQueue().size();
     }
@@ -69,9 +72,5 @@ public class CommandQueueService {
     public void shutdown() {
         criticalExecutor.shutdownNow();
         commonExecutor.shutdownNow();
-    }
-
-    public int getCurrentQueueSize(CommandQueueService commandQueueService) {
-        return commonExecutor.getQueue().size();
     }
 }

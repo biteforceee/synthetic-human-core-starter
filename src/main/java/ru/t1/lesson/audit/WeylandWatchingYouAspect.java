@@ -7,9 +7,11 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Aspect
+@Component
 @AllArgsConstructor
 public class WeylandWatchingYouAspect {
     private KafkaTemplate<String,String> kafkaTemplate;
@@ -26,8 +28,8 @@ public class WeylandWatchingYouAspect {
                 + args.toString()
                 + ", результат выполнения: " + proceed;
 
-        if(AuditMode.CONSOLE.equals(auditConfiguration.getMode())) {
-            kafkaTemplate.send("audit", str);
+        if(AuditMode.KAFKA.equals(auditConfiguration.getMode())) {
+            kafkaTemplate.send(auditConfiguration.getKafkaTopic(), str);
         } else {
             log.info("Метод {} вызван с аргументами: {} , результат выполнения: {}"
                     ,signature.getName()

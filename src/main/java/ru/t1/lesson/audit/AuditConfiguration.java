@@ -9,4 +9,5 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "synthetic-human-core-starter.audit")
 public class AuditConfiguration {
     private AuditMode mode = AuditMode.CONSOLE; // console или kafka
+    private String kafkaTopic = "audit";
 }

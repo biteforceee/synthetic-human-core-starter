@@ -3,24 +3,21 @@ package ru.t1.lesson.metrics;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.t1.lesson.command.CommandQueueService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
     private final MeterRegistry meterRegistry;
     private final Map<String, Counter> authorCommandCounts = new ConcurrentHashMap<>();
-    private final CommandQueueService commandQueueService;
 
-    @PostConstruct
-    public void getQueueSize() {
-        Gauge.builder("synthetic.queue.size", commandQueueService, commandQueueService::getCurrentQueueSize)
+    public void registerQueueSizeSupplier(Supplier<Number> queueSize) {
+        Gauge.builder("synthetic.queue.size", queueSize)
                 .description("Current number of commands in queue")
                 .register(meterRegistry);
     }
