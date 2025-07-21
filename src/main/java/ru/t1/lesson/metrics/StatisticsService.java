@@ -32,4 +32,17 @@ public class StatisticsService {
 
         counter.increment();
     }
+
+    public double getQueueSize() {
+        return meterRegistry.get("synthetic.queue.size")
+                .gauge()
+                .value();
+    }
+
+    public long getCommandCount(String author) {
+        return (long) meterRegistry.get("synthetic.commands.completed")
+                .tag("author", author)
+                .counter()
+                .count();
+    }
 }

@@ -68,6 +68,14 @@ public class CommandQueueService implements CommandService{
         return commonExecutor.getQueue().size();
     }
 
+    public double getQueueSize() {
+        return statisticsService.getQueueSize();
+    }
+
+    public long getCommandCount(String author) {
+        return statisticsService.getCommandCount(author);
+    }
+
     @PreDestroy
     public void shutdown() {
         criticalExecutor.shutdownNow();
